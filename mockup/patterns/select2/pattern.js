@@ -227,6 +227,8 @@ define(["jquery", "pat-base", "mockup-utils", "sortable", "select2"], function (
             self.$el.parent().off("close.plone-modal.patterns");
             if (self.options.orderable) {
                 self.$select2.addClass("select2-orderable");
+                // Added by Maurits as backport of https://github.com/plone/mockup/pull/1214
+                self.$el.change();
             }
         },
         opened: function () {
