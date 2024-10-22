@@ -71,7 +71,7 @@
 define([
   'jquery',
   'pat-base'
-], function($, Base) {
+], function ($, Base) {
   'use strict';
 
   var AutoTOC = Base.extend({
@@ -89,7 +89,7 @@ define([
       scrollDuration: 'slow',
       scrollEasing: 'swing'
     },
-    init: function() {
+    init: function () {
       var self = this;
 
       self.$toc = $('<nav/>').addClass(self.options.classTOCName);
@@ -112,27 +112,30 @@ define([
 
       var activeId = null;
 
-      $(self.options.levels, self.$el).each(function(i) {
+      $(self.options.levels, self.$el).each(function (i) {
         var $level = $(this),
-            id = $level.prop('id') ? $level.prop('id') :
-                 $level.parents(self.options.section).prop('id');
+          id = $level.prop('id') ? $level.prop('id') :
+            $level.parents(self.options.section).prop('id');
         if (!id || $('#' + id).length > 0) {
           id = self.options.IDPrefix + self.name + '-' + i;
         }
-        if(window.location.hash === '#' + id){
+        if (window.location.hash === '#' + id) {
           activeId = id;
         }
         $level.data('navref', id);
+        if ($level.parents(self.options.section).find('div.field.error').length > 0) {
+          $level.text($level.text() + '*');
+        }
         $('<a/>')
           .appendTo(self.$toc)
           .text($level.text())
           .attr('id', id)
           .attr('href', '#' + id)
           .addClass(self.options.classLevelPrefixName + self.getLevel($level))
-          .on('click', function(e, options) {
+          .on('click', function (e, options) {
             e.stopPropagation();
             e.preventDefault();
-            if(!options){
+            if (!options) {
               options = {
                 doScroll: true,
                 skipHash: false
@@ -144,9 +147,9 @@ define([
             $(e.target).addClass(self.options.classActiveName);
             $level.parents(self.options.section).addClass(self.options.classActiveName);
             if (options.doScroll !== false &&
-                self.options.scrollDuration &&
-                $level &&
-                !asTabs) {
+              self.options.scrollDuration &&
+              $level &&
+              !asTabs) {
               $('body,html').animate({
                 scrollTop: $level.offset().top
               }, self.options.scrollDuration, self.options.scrollEasing);
@@ -155,28 +158,29 @@ define([
               self.$el.trigger('resize.plone-modal.patterns');
             }
             $(this).trigger('clicked');
-            if(!options.skipHash){
-              if(window.history && window.history.pushState){
+            if (!options.skipHash) {
+              if (window.history && window.history.pushState) {
                 window.history.pushState({}, '', '#' + $el.attr('id'));
               }
             }
           });
       });
 
-      if(activeId){
+      if (activeId) {
         $('a#' + activeId).trigger('click', {
           doScroll: true,
           skipHash: true
         });
-      }else{
+      } else {
         self.$toc.find('a').first().trigger('click', {
           doScroll: false,
-          skipHash: true});
+          skipHash: true
+        });
       }
     },
-    getLevel: function($el) {
+    getLevel: function ($el) {
       var elementLevel = 0;
-      $.each(this.options.levels.split(','), function(level, levelSelector) {
+      $.each(this.options.levels.split(','), function (level, levelSelector) {
         if ($el.filter(levelSelector).size() === 1) {
           elementLevel = level + 1;
           return false;
